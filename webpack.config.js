@@ -43,14 +43,12 @@ const baseConfig = {
     }, {
       test: /\.jsx?$/,
       use: {
-        // loader: 'babel-loader',
         loader: 'happypack/loader?id=happy-babel-js',
-        // query: {
+        // options: {
         //   presets: ['env', 'stage-0', 'react'] // env转换es6 stage-0转es7 react转react
         // }
       },
-      include: path.resolve(__dirname + 'src'),
-      exclude: /node_modules/,
+      exclude: /node_modules|vendor/,
     }]
   },
   // webpack4最新配置，可以搜索关键字查查配置项
@@ -102,7 +100,7 @@ const baseConfig = {
     }),
     new HappyPack({
       id: 'happy-babel-js',
-      loaders: ['babel-loader?presets[]=es2015'],
+      loaders: ['babel-loader?cacheDirectory=true'],
       threadPool: happyThreadPool
     })
   ]
@@ -126,7 +124,7 @@ const dllConfig = {
   ]
 }
 
-module.exports = function(env) {
+module.exports = function (env) {
   console.log(env);
   if (env.dll) {
     return dllConfig
@@ -135,7 +133,7 @@ module.exports = function(env) {
     console.log("未找到dll.js，请先执行`npm run dll`");
     return
   }
-  let config = null ;
+  let config = null;
   if (env.dev) {
     config = {
       devtool: "eval-source-map",
@@ -158,7 +156,7 @@ module.exports = function(env) {
       },
       plugins: [
         new webpack.DefinePlugin({
-            'ENV': JSON.stringify(env)
+          'ENV': JSON.stringify(env)
         })
       ]
     };
@@ -174,12 +172,12 @@ module.exports = function(env) {
       },
       plugins: [
         new webpack.DefinePlugin({
-            'ENV': JSON.stringify(env)
+          'ENV': JSON.stringify(env)
         })
       ]
     }
   }
-  return merge(baseConfig,config)
+  return merge(baseConfig, config)
 }
 
 // 返回请求的 mock 数据

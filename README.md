@@ -1,5 +1,5 @@
 
-## 基于 node7.0  webpack4.2  sass react16 搭建的框架
+## 基于 node7.0  webpack4.2  sass react16 react-router-dom4.2搭建的框架
 
     * nodejs 7.0以上
     * 开发建议，统一使用 sublime3 + 的版本进行开发
