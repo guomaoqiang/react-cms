@@ -16,7 +16,8 @@ const root = path.resolve(process.cwd());
 const merge = require("webpack-merge");
 
 const vendor = [
-  'react'
+  'react',
+  'react-router-dom'
 ]
 
 const baseConfig = {
