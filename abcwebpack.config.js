@@ -1,7 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin')
-const webpack = require('webpack')
+const Webpack = require('webpack')
 const glob = require('glob')
 const PurifyCSSPlugin = require('purifycss-webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -15,18 +15,15 @@ const fs = require('fs');
 const root = path.resolve(process.cwd());
 const merge = require("webpack-merge");
 
-const vendor = [
-  'react'
-]
-
-const baseConfig = {
+module.exports = {
   entry: {
     index: __dirname + '/src/index.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),
     // name是entry的名字main，hash是根据打包后的文件内容计算出来的hash值
-    filename: 'js/[name].[hash:6].js'
+    filename: '[name].[hash:6].js',
+    publicPath: '/'
   },
   module: {
     rules: [{
@@ -67,15 +64,34 @@ const baseConfig = {
       }
     }
   },
+  // 1. source-map 把映射文件生成到单独的文件，最完整最慢 生产用
+  // 2. cheap-module-source-map 在一个单独的文件中产生一个不带列映射的Map
+  // 3. eval-source-map 使用eval打包源文件模块,在同一个文件中生成完整sourcemap
+  // 4. cheap-module-eval-source-map sourcemap和打包后的JS同行显示，没有映射列
+  devtool: "eval-source-map",
   resolve: {
+    // 解析模块请求的选项
+    // （不适用于对 loader 解析）
     modules: [
       "node_modules",
       path.resolve(__dirname, "src")
     ],
+    // 用于查找模块的目录
     extensions: [".js", ".json", ".jsx", ".css"],
+    // 使用的扩展名
     alias: {
+      // 模块别名列表
+      "module": "new-module",
+      // 起别名："module" -> "new-module" 和 "module/path/file" -> "new-module/path/file"
+      "only-module$": "new-module",
+      // 起别名 "only-module" -> "new-module"，但不匹配 "only-module/path/file" -> "new-module/path/file"
       "module": path.resolve(__dirname, "app/third/module.js"),
+      // 起别名 "module" -> "./app/third/module.js" 和 "module/file" 会导致错误
+      // 模块别名相对于当前上下文导入
     },
+    /* 可供选择的别名语法（点击展示） */
+
+    /* 高级解析选项（点击展示） */
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -105,82 +121,34 @@ const baseConfig = {
       loaders: ['babel-loader?presets[]=es2015'],
       threadPool: happyThreadPool
     })
-  ]
-}
-const dllConfig = {
-  devtool: "eval-source-map",
-  entry: {
-    dll: vendor
-  },
-  output: {
-    path: path.join(__dirname, 'dll'),
-    filename: '[name].js',
-    library: '_dll_[name]' // 全局变量名，其他模块会从此变量上获取里面模块
-  },
-  // manifest是描述文件
-  plugins: [
-    new webpack.DllPlugin({
-      name: '_dll_[name]',
-      path: path.join(__dirname, 'manifest.json')
-    })
-  ]
-}
-
-module.exports = function(env) {
-  console.log(env);
-  if (env.dll) {
-    return dllConfig
-  }
-  if (!env.prd && !fs.existsSync(path.join(__dirname, 'dll', "dll.js"))) {
-    console.log("未找到dll.js，请先执行`npm run dll`");
-    return
-  }
-  let config = null ;
-  if (env.dev) {
-    config = {
-      devtool: "eval-source-map",
-      devServer: {
-        contentBase: path.join(__dirname, 'dist'),
-        // 当使用 HTML5 History API 时，任意的 404 响应都可能需要被替代为 index.html
-        historyApiFallback: true,
-        port: 9090,
-        host: ip.address(),
-        overlay: true,
-        compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
-        before: (app) => {
-          // app.get('/mocks/demo', function (req, res) {
-          //   res.json({
-          //     custom: 'response'
-          //   });
-          // });
-          app.get('/mocks/*', mockResult)
-        }
-      },
-      plugins: [
-        new webpack.DefinePlugin({
-            'ENV': JSON.stringify(env)
-        })
-      ]
-    };
-  } else {
-    config = {
-      devtool: "source-map",
-      entry: {
-        vendor: vendor
-      },
-      output: {
-        filename: 'js/[name].[chunkhash:8].js',
-        chunkFilename: '[name].[chunkhash:8].js',
-      },
-      plugins: [
-        new webpack.DefinePlugin({
-            'ENV': JSON.stringify(env)
-        })
-      ]
+    // 复制静态文件
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: path.resolve(__dirname, 'static'),
+    //     to: path.resolve(__dirname, 'pages/static'),
+    //     ignore: ['.*']
+    //   }
+    // ])
+  ],
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    // 当使用 HTML5 History API 时，任意的 404 响应都可能需要被替代为 index.html
+    historyApiFallback: true,
+    port: 9090,
+    host: ip.address(),
+    overlay: true,
+    compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
+    before: (app) => {
+      // app.get('/mocks/demo', function (req, res) {
+      //   res.json({
+      //     custom: 'response'
+      //   });
+      // });
+      app.get('/mocks/*', mockResult)
     }
   }
-  return merge(baseConfig,config)
 }
+
 
 // 返回请求的 mock 数据
 function mockResult(req, res) {
