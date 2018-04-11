@@ -1,5 +1,12 @@
+## 用于后管系统
 
-## 基于 node7.0  webpack4.2  sass react16 react-router-dom4.2搭建的框架
+    * redux  react-redux 用于数据交互存储
+    * antd 用于UI搭建
+    * axios 用来接口请求
+    * sass 用于预编译样式
+    * webpack4.2 较以前改变许多
+
+## 基于 node7.0  react16 react-router-dom4.2搭建的框架
 
     * nodejs 7.0以上
     * 开发建议，统一使用 sublime3 + 的版本进行开发
