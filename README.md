@@ -46,14 +46,30 @@
     * 
 
 
-## 单个项目目录结构
+## 目录结构
 
-````
-fonts                     -- 字体文件
-html                      -- 页面
-img                       -- 图片[没有可以删除]
-js                        -- 脚本
-mocks                      -- 本地数据[没有可以删除]，ajax 直接引用，不打包
-scss                      -- 样式[没有可以删除]，require 直接引用，不打包
-other dics                -- 其他自定义文件夹，可以是组建之类的，公用业务模板，js中直接用 require 引用就可以了，不打包
-````
+```
+|mock                       -- mock 数据
+|dll                        -- 开发环境提取公共部门，加快开发环境构建速度
+|src                        -- 开发目录
+├── components             -- 组件
+    └── ****                -- 公用组件
+    └── utils               -- 公用工具类
+    └── network             -- 请求方法封装
+├── configs                 -- 各个 site 配置
+    └── demo                -- demo 配置参考
+├── business                -- 业务相关组件
+    └── ****                -- 公用组件
+├── style                   -- 公共样式，使用了 antd 暂时不用
+├── views                   -- 页面
+    └── ****                -- 各个子模块
+├── app.js                  -- 路由页面
+├── bundle.js               -- 懒加载文件
+├── index.html              -- 入口页面
+├── index.js                -- 入口脚本，路由配置文件
+|dist                       -- 打包后的文件目录
+.gitignore                  -- git 忽略配置
+.postcssrc.js               -- autoprefixer 样式自动补全版本
+README.md                   -- 项目使用基础文档
+package.json                -- 项目配置和依赖
+webpack.config.js           -- webpack 打包配置文件

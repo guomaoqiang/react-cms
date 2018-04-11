@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom';
 import {
   AppContainer
 } from 'react-hot-loader';
-// // import 'style/global.scss'
-// console.lgo('--');
+import 'style/global.scss';
 // // import Fastclick from "fastclick";
 // // Fastclick.attach(document.body);
 

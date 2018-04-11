@@ -17,7 +17,9 @@ const merge = require("webpack-merge");
 
 const vendor = [
   'react',
-  'react-router-dom'
+  'react-router-dom',
+  'react-redux',
+  'redux',
 ]
 
 const baseConfig = {
@@ -37,9 +39,14 @@ const baseConfig = {
       // 多个loader是有顺序要求的，从右往左写，因为转换的时候是从右往左转换的
       // 此插件先用css-loader处理一下css文件
       use: ExtractTextWebpackPlugin.extract({
-        // fallback: 'style-loader',
+        fallback: 'style-loader',
         //如果需要，可以在 sass-loader 之前将 resolve-url-loader 链接进来
-        use: ['css-loader', 'sass-loader', 'postcss-loader']
+        use: [{
+          loader: 'css-loader',
+          options:{
+            minimize: true //css压缩
+          }
+        }, 'sass-loader', 'postcss-loader']
       })
     }, {
       test: /\.jsx?$/,
@@ -50,6 +57,17 @@ const baseConfig = {
         // }
       },
       exclude: /node_modules|vendor/,
+    }, {
+      // 处理图片格式的文件
+      test: /\.(png|jpe?g||git)$/,
+      use: [{
+        loader: 'url-loader',
+        options: {
+          // 小于8.192K的图片转成baseURI
+          limit: 8192,
+          name: 'images/[name].[hash:4].[ext]',
+        }
+      }]
     }]
   },
   // webpack4最新配置，可以搜索关键字查查配置项
@@ -73,7 +91,8 @@ const baseConfig = {
     ],
     extensions: [".js", ".json", ".jsx", ".css"],
     alias: {
-      "module": path.resolve(__dirname, "app/third/module.js"),
+      "style": path.resolve(__dirname, "src/style"),
+      "component": path.resolve(__dirname, "src/component"),
     },
   },
   plugins: [
@@ -128,11 +147,11 @@ const dllConfig = {
 module.exports = function (env) {
   console.log(env);
   if (env.dll) {
-    return dllConfig
+    return dllConfig;
   }
   if (!env.prd && !fs.existsSync(path.join(__dirname, 'dll', "dll.js"))) {
     console.log("未找到dll.js，请先执行`npm run dll`");
-    return
+    return;
   }
   let config = null;
   if (env.dev) {
@@ -152,13 +171,14 @@ module.exports = function (env) {
           //     custom: 'response'
           //   });
           // });
-          app.get('/mocks/*', mockResult)
+          app.get('/mock/*', mockResult)
         }
       },
       plugins: [
         new webpack.DefinePlugin({
           'ENV': JSON.stringify(env)
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin(),
       ]
     };
   } else {
@@ -169,7 +189,7 @@ module.exports = function (env) {
       },
       output: {
         filename: 'js/[name].[chunkhash:8].js',
-        chunkFilename: '[name].[chunkhash:8].js',
+        chunkFilename: 'js/[name].[chunkhash:8].js',
       },
       plugins: [
         new webpack.DefinePlugin({
