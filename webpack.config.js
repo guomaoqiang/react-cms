@@ -120,7 +120,7 @@ const baseConfig = {
     }),
     new HappyPack({
       id: 'happy-babel-js',
-      loaders: ['babel-loader?cacheDirectory=true'],
+      loaders: ['babel-loader?presets[]=env'],
       threadPool: happyThreadPool
     })
   ]

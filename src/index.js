@@ -9,42 +9,28 @@ import 'style/global.scss';
 // // Fastclick.attach(document.body);
 
 import App from './app';
-// // redux
-// // import { Provider } from 'react-redux';
-// // import reducer from './reducer/index';
-// // import { createStore,combineReducers,applyMiddleware} from 'redux';
-// // import thunk from 'redux-thunk';
-// // import logger from 'redux-logger';
+// redux
+import { Provider } from 'react-redux';
+import reducer from './reducer/index';
+import { createStore,combineReducers,applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 
-// // const store = createStore(
-// //     combineReducers(reducer),
-// //     applyMiddleware(thunk,logger)
-// // );
-
-
-console.log(ENV);
-
-// // import './styles/index.scss';
+const store = createStore(
+    combineReducers(reducer),
+    applyMiddleware(thunk,logger)
+);
 
 const render = () => {
   ReactDOM.render(
-  	<AppContainer>
-    	<App/>
+    <AppContainer>
+      <Provider store={store}>
+        <App/>
+      </Provider>
     </AppContainer>,
     document.getElementById('root')
   )
 }
-
-// // const render = () => {
-// //     ReactDOM.render(
-// //         <AppContainer>
-// //             <Provider store={store}>
-// //                 <App/>
-// //             </Provider>
-// //         </AppContainer>,
-// //         document.getElementById('root')
-// //     )
-// // }
 render();
 
 // 用于监听react模块的热更新
