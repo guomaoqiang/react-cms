@@ -4,13 +4,21 @@
       "env",
       {
         "targets": {
-          "browsers":["last 2 versions"],
+          "browsers":["last 2 versions","safari >= 7"],
           "node":"current"
         }
       }
-    ],["react"]
+    ],["react"],"stage-0"
   ],
   "plugins": [
+    [
+      "transform-runtime", {
+        "helpers": false,
+        "polyfill": false,
+        "regenerator": true,
+        "moduleName": "babel-runtime"
+      }
+    ],
     "transform-decorators-legacy",
     "transform-class-properties"
   ]

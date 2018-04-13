@@ -17,6 +17,7 @@ const merge = require("webpack-merge");
 
 const vendor = [
   'react',
+  'react-dom',
   'react-router-dom',
   'react-redux',
   'redux',
