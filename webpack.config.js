@@ -21,6 +21,8 @@ const vendor = [
   'react-router-dom',
   'react-redux',
   'redux',
+  'redux-logger',
+  'redux-thunk'
 ]
 
 const baseConfig = {
@@ -93,7 +95,7 @@ const baseConfig = {
     extensions: [".js", ".json", ".jsx", ".css"],
     alias: {
       "style": path.resolve(__dirname, "src/style"),
-      "component": path.resolve(__dirname, "src/component"),
+      "components": path.resolve(__dirname, "src/components"),
     },
   },
   plugins: [
@@ -112,7 +114,8 @@ const baseConfig = {
       }
     }),
     new ExtractTextWebpackPlugin({
-      filename: 'css/[name].[hash:6].css'
+      filename: 'css/[name].[hash:6].css',
+      allChunks: true,
     }),
     // 去除无用的css
     new PurifyCSSPlugin({
